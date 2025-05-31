@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task 4 - Portfolio, To-Do, Product Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: white;
+      color: black;
+    }
+
+    header {
+      background: #003366;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    section {
+      margin-bottom: 40px;
+      padding: 20px;
+      background-color: #e6f0ff;
+      border: 1px solid #004080;
+      border-radius: 10px;
+    }
+
+    h2 {
+      color: #003366;
+    }
+
+    button {
+      background-color: #004080;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00264d;
+    }
+
+    input, textarea, select {
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .todo-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .product-card {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+
+    .product-card h4 {
+      margin: 5px 0;
+    }
+
+    @media(max-width: 768px) {
+      input, button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Task 4 - Mini Project Integration</h1>
+  </header>
+  <div class="container">
+    
+    <!-- 1. Personal Portfolio -->
+    <section>
+      <h2>👤 Personal Portfolio</h2>
+      <p><strong>Name:</strong> lokesh katineedi</p>
+      <p><strong>About:</strong> I am a passionate web developer currently doing an internship at ApexPlanet.</p>
+      <p><strong>Projects:</strong></p>
+      <ul>
+        <li>📝 Task 1: Basic Web Page</li>
+        <li>📧 Task 2: Contact Form</li>
+        <li>🧠 Task 3: Quiz & Clock</li>
+      </ul>
+      <p><strong>Contact:</strong> katineedisariyu@gmail.com</p>
+    </section>
+
+    <!-- 2. To-Do App with Local Storage -->
+    <section>
+      <h2>📝 To-Do List (Saved in Local Storage)</h2>
+      <input type="text" id="todo-input" placeholder="Add a new task" />
+      <button onclick="addTodo()">Add</button>
+      <ul id="todo-list" class="todo-list"></ul>
+    </section>
+
+    <!-- 3. Product Listing with Filter/Sort -->
+    <section>
+      <h2>🛍️ Product Listing</h2>
+      <label>Filter by Category:</label>
+      <select id="filter" onchange="renderProducts()">
+        <option value="all">All</option>
+        <option value="phone">Phone</option>
+        <option value="laptop">Laptop</option>
+      </select>
+      <label>Sort by Price:</label>
+      <select id="sort" onchange="renderProducts()">
+        <option value="default">Default</option>
+        <option value="asc">Low to High</option>
+        <option value="desc">High to Low</option>
+      </select>
+
+      <div id="product-list"></div>
+    </section>
+  </div>
+
+  <script>
+    // ------------- TO-DO LIST -------------
+    const todoInput = document.getElementById('todo-input');
+    const todoList = document.getElementById('todo-list');
+
+    function loadTodos() {
+      const todos = JSON.parse(localStorage.getItem('todos')) || [];
+      todoList.innerHTML = '';
+      todos.forEach((todo, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${todo} <button onclick="removeTodo(${index})">❌</button>`;
+        todoList.appendChild(li);
+      });
+    }
+
+    function addTodo() {
+      const task = todoInput.value.trim();
+      if (task === '') return;
+      const todos = JSON.parse(localStorage.getItem('todos')) || [];
+      todos.push(task);
+      localStorage.setItem('todos', JSON.stringify(todos));
+      todoInput.value = '';
+      loadTodos();
+    }
+
+    function removeTodo(index) {
+      const todos = JSON.parse(localStorage.getItem('todos')) || [];
+      todos.splice(index, 1);
+      localStorage.setItem('todos', JSON.stringify(todos));
+      loadTodos();
+    }
+
+    loadTodos();
+
+    // ------------- PRODUCT LISTING -------------
+    const products = [
+      { name: "iPhone 14", category: "phone", price: 800 },
+      { name: "Samsung Galaxy S23", category: "phone", price: 700 },
+      { name: "HP Pavilion", category: "laptop", price: 650 },
+      { name: "MacBook Air", category: "laptop", price: 1000 }
+    ];
+
+    function renderProducts() {
+      const filter = document.getElementById("filter").value;
+      const sort = document.getElementById("sort").value;
+      let filtered = [...products];
+
+      if (filter !== "all") {
+        filtered = filtered.filter(p => p.category === filter);
+      }
+
+      if (sort === "asc") {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (sort === "desc") {
+        filtered.sort((a, b) => b.price - a.price);
+      }
+
+      const container = document.getElementById("product-list");
+      container.innerHTML = "";
+      filtered.forEach(product => {
+        const div = document.createElement("div");
+        div.className = "product-card";
+        div.innerHTML = `<h4>${product.name}</h4><p>Category: ${product.category}</p><p>Price: ₹${product.price}</p>`;
+        container.appendChild(div);
+      });
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
